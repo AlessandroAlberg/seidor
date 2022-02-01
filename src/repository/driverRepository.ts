@@ -1,16 +1,16 @@
-import { CarDto, CarUpdateDto } from '../dtos/car.dto';
+import { DriverDto } from '../dtos/driver';
 import knex from '../database/connection'
 
-export default class CarRepository {
+export default class DriverRepository {
     constructor() {
     }
 
     async findAll() {
         try {
-            const cars = await knex('cars')
-            .select('cars.*');
+            const drivers = await knex('drivers')
+            .select('drivers.*');
 
-            return cars;
+            return drivers;
         } catch (error: any) {
             throw new Error(error);
         }
@@ -18,36 +18,37 @@ export default class CarRepository {
 
     async find(param: string) {
         try {
-            const car = await knex('cars').where('id', param).first();
-            return car;
+            const driver = await knex('drivers').where('id', param).first();
+            return driver;
         } catch (error: any) {
             throw new Error(error);
         }
     }
 
-    async post(car: CarDto) {
+    async post(driver: DriverDto) {
         try {
             const trx = await knex.transaction();
         
-            const insertedIds = await trx('cars').insert(car);
+            const insertedIds = await trx('drivers').insert(driver);
             
-            const carId = insertedIds[0];
+            const driverId = insertedIds[0];
             
             await trx.commit();
             
-            return carId
+            return driverId
         } catch (error: any) {
             throw new Error(error);
         }
     }
 
-    async update(id: string, car: CarUpdateDto) {
+    async update(id: string, driver: DriverDto) {
         try {
-            const carExists = await knex('cars').where('id', id).first();
 
-            if (!carExists) { return carExists }
+            const driverExists = await knex('drivers').where('id', id).first();
 
-            const result = await knex('cars').where({id}).update(car);
+            if (!driverExists) { return driverExists }
+
+            const result = await knex('drivers').where({id}).update(driver);
 
             return result;
         } catch (error: any) {
@@ -57,7 +58,7 @@ export default class CarRepository {
 
     async delete(param: string) {
         try {
-            const result = await knex('cars').where({id: param}).del();
+            const result = await knex('drivers').where({id: param}).del();
             return result;
         } catch (error: any) {
             throw new Error(error);

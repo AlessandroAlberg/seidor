@@ -1,11 +1,11 @@
-import { CarDto, CarUpdateDto } from '../dtos/car.dto';
-import CarRepository from '../repository/carRepository';
+import { DriverDto } from '../dtos/driver';
+import DriverRepository from '../repository/driverRepository';
 import { transformAndValidate } from 'class-transformer-validator';
 
-export default class CarService {
-    private _repository: CarRepository;
+export default class DriverService {
+    private _repository: DriverRepository;
     constructor() {
-        this._repository = new CarRepository();
+        this._repository = new DriverRepository();
     }
     
     async index(req: any, res: any) {
@@ -23,7 +23,7 @@ export default class CarService {
             
             const result = await this._repository.find(param);
             if (!result) {
-                return res.status(400).json({ message: 'Car not found.' });
+                return res.status(400).json({ message: 'Driver not found.' });
             }
 
             return res.status(200).json({ result });
@@ -34,12 +34,12 @@ export default class CarService {
 
     async create(req: any, res: any) {
         try{
-            const car = await transformAndValidate(CarDto, req.body)
-            const carId = await this._repository.post(car as CarDto);
+            const driver = await transformAndValidate(DriverDto, req.body)
+            const driverId = await this._repository.post(driver as DriverDto);
             
             return res.status(201).json({
-                id: carId,
-                ...car
+                id: driverId,
+                ...driver
             });
         } catch (error: any) {
             res.status(400).json(error)
@@ -49,14 +49,14 @@ export default class CarService {
     async update(req: any, res: any) {
         try{
             const id = req.params.id;
-            const car = await transformAndValidate(CarUpdateDto, req.body)
-            const result = await this._repository.update(id, car as CarUpdateDto);
+            const driver = await transformAndValidate(DriverDto, req.body)
+            const result = await this._repository.update(id, driver as DriverDto);
 
             if (!result) {
-                return res.status(400).json({ message: 'Car not found.' });
+                return res.status(400).json({ message: 'Driver not found.' });
             }
             
-            return res.status(200).json({ response: result, message: 'Updated car.'});
+            return res.status(200).json({ response: result, message: 'Updated driver.'});
         } catch (error: any) {
             res.status(400).json(error)
         }
@@ -67,7 +67,7 @@ export default class CarService {
             const param = req.params.id;
             const result = await this._repository.delete(param);
             
-            return res.status(200).json({response: result, message: 'Delete car.'});;
+            return res.status(200).json({response: result, message: 'Delete driver.'});;
         } catch (error: any) {
             throw new Error(error);
         }
