@@ -5,8 +5,10 @@
   "repository": "git@github.com:AlessandroAlberg/seidor.git",
   "author": "Alessandro Albergaria <alessandro@plugpagamentos.com>",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "start": "ts-node-dev --transpile-only --ignore-watch node_modules src/server.ts",
+    "test": "node node_modules/mocha/bin/mocha src/test/api/controller/main.ts --timeout 120000",
     "knex:seed": "knex --knexfile knexfile.ts seed:run",
     "knex:migrate": "knex --knexfile knexfile.ts migrate:latest"
   },
@@ -24,6 +26,11 @@
   "devDependencies": {
     "@types/cors": "^2.8.6",
     "@types/express": "^4.17.6",
+    "@types/mocha": "^9.1.0",
+    "chai": "^4.2.0",
+    "chai-http": "^4.2.1",
+    "chai-things": "^0.2.0",
+    "mocha": "^8.3.0",
     "ts-node": "^8.10.2",
     "ts-node-dev": "^1.0.0-pre.44",
     "typescript": "^3.9.5"
