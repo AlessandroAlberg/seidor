@@ -1,7 +1,7 @@
 import UseCarRepository from '../repository/useCarRepository';
 import { transformAndValidate } from 'class-transformer-validator';
 import { EndUseCarDto, UseCarDto } from '../dtos/use_car.dto';
-import * as R from 'ramda'
+import * as R from 'ramda';
 
 export default class UseCarService {
     private _repository: UseCarRepository;
@@ -11,7 +11,7 @@ export default class UseCarService {
     
     async index(req: any, res: any) {
         try {
-            let result = await  this._repository.findAll();
+            const result = await this._repository.findAll();
             return res.status(200).send(result);
         } catch (error: any) {
             throw new Error(error);
@@ -23,7 +23,7 @@ export default class UseCarService {
             const param = req.params.id;
             
             const result = await this._repository.find(param);
-            if (!result) {
+            if (R.isNil(result)) {
                 return res.status(400).json({ message: 'Vehicle usage record not found.' });
             }
 
@@ -38,10 +38,10 @@ export default class UseCarService {
             const useCar = await transformAndValidate(UseCarDto, req.body)
 
             const carUsed = await this._repository.findCarUsed((useCar as UseCarDto).car_id);
-            if (carUsed) { res.status(400).json({ message: 'Vehicle is already being used.' }) }
+            if (!R.isNil(carUsed)) { return res.status(400).json({ message: 'Vehicle is already being used.' }) }
 
             const driverIsUsing = await this._repository.findDriverIsUsing((useCar as UseCarDto).driver_id);
-            if (!R.isNil(driverIsUsing)) { res.status(400).json({ message: 'Driver is using a vehicle.' }) }
+            if (!R.isNil(driverIsUsing)) { return res.status(400).json({ message: 'Driver is using a vehicle.' }) }
 
             const useCarId = await this._repository.post(useCar as UseCarDto);
             
@@ -50,7 +50,7 @@ export default class UseCarService {
                 ...useCar
             });
         } catch (error: any) {
-            res.status(400).json(error)
+            res.status(400).json(error);
         }
     }
 
@@ -66,7 +66,7 @@ export default class UseCarService {
             
             return res.status(200).json({ response: result, message: 'Vehicle use is terminated.'});
         } catch (error: any) {
-            res.status(400).json(error)
+            res.status(400).json(error);
         }
     }
 }

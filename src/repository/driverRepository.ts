@@ -1,5 +1,6 @@
 import { DriverDto } from '../dtos/driver';
-import knex from '../database/connection'
+import knex from '../database/connection';
+import * as R from 'ramda';
 
 export default class DriverRepository {
     constructor() {
@@ -20,6 +21,17 @@ export default class DriverRepository {
         try {
             const driver = await knex('drivers').where('id', param).first();
             return driver;
+        } catch (error: any) {
+            throw new Error(error);
+        }
+    }
+
+    async findFiltered(filter: string) {
+        try {
+            const drivers = await knex('drivers')
+                .where('name', filter)
+
+            return drivers;
         } catch (error: any) {
             throw new Error(error);
         }
@@ -46,7 +58,7 @@ export default class DriverRepository {
 
             const driverExists = await knex('drivers').where('id', id).first();
 
-            if (!driverExists) { return driverExists }
+            if (R.isNil(driverExists)) { return driverExists }
 
             const result = await knex('drivers').where({id}).update(driver);
 

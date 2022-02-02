@@ -1,5 +1,6 @@
-import { CarDto, CarUpdateDto } from '../dtos/car.dto';
-import knex from '../database/connection'
+import { CarDto, CarUpdateDto, FilterCarDto } from '../dtos/car.dto';
+import knex from '../database/connection';
+import * as R from 'ramda';
 
 export default class CarRepository {
     constructor() {
@@ -11,6 +12,24 @@ export default class CarRepository {
             .select('cars.*');
 
             return cars;
+        } catch (error: any) {
+            throw new Error(error);
+        }
+    }
+
+    async findFiltered(filter: FilterCarDto) {
+        try {
+            if(filter.brand && filter.color) {
+                return await knex('cars')
+                .where('brand', filter.brand)
+                .andWhere('color', filter.color)
+            } else if (filter.brand) {
+                return await knex('cars')
+                .where('brand', filter.brand)
+            } else {
+                return await knex('cars')
+                .where('color', filter.color)
+            }
         } catch (error: any) {
             throw new Error(error);
         }
@@ -45,7 +64,7 @@ export default class CarRepository {
         try {
             const carExists = await knex('cars').where('id', id).first();
 
-            if (!carExists) { return carExists }
+            if (R.isNil(carExists)) { return carExists }
 
             const result = await knex('cars').where({id}).update(car);
 

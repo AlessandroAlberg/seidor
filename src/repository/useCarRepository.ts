@@ -1,5 +1,6 @@
 import { EndUseCarDto, UseCarDto } from '../dtos/use_car.dto';
 import knex from '../database/connection';
+import * as R from 'ramda';
 
 export default class UseCarRepository {
     constructor() {
@@ -29,7 +30,7 @@ export default class UseCarRepository {
 
     async findCarUsed(id: string) {
         try {
-            const carUsed = await knex('use_cars').where('car_id', id).andWhere('end_date is not null').first();
+            const carUsed = await knex('use_cars').where('car_id', id).andWhere('end_date', null).first();
             return carUsed;
         } catch (error: any) {
             throw new Error(error);
@@ -38,7 +39,7 @@ export default class UseCarRepository {
 
     async findDriverIsUsing(id: string) {
         try {
-            const driverIsUsing = await knex('use_cars').where('driver_id', id).andWhere('end_date is not null').first();
+            const driverIsUsing = await knex('use_cars').where('driver_id', id).andWhere('end_date', null).first();
             return driverIsUsing;
         } catch (error: any) {
             throw new Error(error);
@@ -66,7 +67,7 @@ export default class UseCarRepository {
 
             const useCar = await knex('use_cars').where('id', id).first();
 
-            if (!useCar) { return useCar }
+            if (R.isNil(useCar)) { return useCar }
             
             const result = await knex('use_cars').where({id}).update(endDate);
 
